@@ -100,7 +100,7 @@ function processRealAsset(fromStockroom, availableSubstatus) {
    
    // last sanity check that asset is valid for this transfer
    // we should never enter one of those cases so I lump them together
-   if (asset.model != current.model || asset.stockroom != fromStockroom ||
+   if (!(new WrightHAMSourcingLogic().checkModelIsSubstitute(asset.model, current.model)) || asset.stockroom != fromStockroom ||
       asset.install_status != '6' || !(asset.substatus == availableSubstatus ||
    asset.substatus == 'pre_allocated' || asset.substatus == 'defective')) {
       // severe inconsistency, should never happen, abort action and log
