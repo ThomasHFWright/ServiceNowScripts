@@ -139,7 +139,7 @@ ProcSourceRequestManager.prototype = {
             'samassignment_TOOLTIP': gs.getMessage('Click this button to create assignment'),
             'assignment_TOOLTIP': gs.getMessage('Click this button to create assignment'),
         };
-		
+
 		request.pluginsStatus = pluginsStatus;
 		request.messages = messages;
         return JSON.stringify(request);
@@ -234,7 +234,7 @@ ProcSourceRequestManager.prototype = {
 							buttonClickValue: 'purchase'
 						});
 					}
-                    
+
                 }
             }
 
@@ -543,14 +543,14 @@ ProcSourceRequestManager.prototype = {
         var gr = new GlideAggregate('alm_asset');
         var counter = 0;
         global.AssetUtils.addAssetQuery(gr, global.AssetUtils.ASSET_FUNCTION_FEATURE.SOURCING);
-        gr.addQuery('model', 'IN', new global.WrightHAMSourcingLogic().getModelSubstitutes(model));
+        gr.addQuery('model', model);
         gr.addQuery('install_status', global.AssetUtils.INSTOCK_STATUS);
         gr.addQuery('substatus', global.AssetUtils.AVAILABLE_SUBSTATUS);
         //Stock order exclude stock in requested stockroom
         if (!gs.nil(excludeStockroom))
             gr.addQuery('stockroom', 'NOT IN', excludeStockroom);
         gr.addAggregate('SUM', 'quantity');
-        //gr.groupBy('model');
+        gr.groupBy('model');
         gr.query();
         if (gr.next()) {
             counter = parseInt(gr.getAggregate('SUM', 'quantity'));
@@ -627,7 +627,7 @@ ProcSourceRequestManager.prototype = {
         var count = 0;
         var gr = new GlideAggregate('alm_asset');
         global.AssetUtils.addAssetQuery(gr, global.AssetUtils.ASSET_FUNCTION_FEATURE.SOURCING);
-        gr.addQuery('model', 'IN', new global.WrightHAMSourcingLogic().getModelSubstitutes(item.cat_item.model));
+        gr.addQuery('model', item.cat_item.model);
         gr.addQuery('install_status', global.AssetUtils.INSTOCK_STATUS);
         gr.addQuery('substatus', global.AssetUtils.AVAILABLE_SUBSTATUS);
         if (!gs.nil(excludeStockroom))
@@ -640,9 +640,9 @@ ProcSourceRequestManager.prototype = {
 			if (!gs.nil(stockroomsServingLoc))
 			stockroomQc.addOrCondition('stockroom', 'IN', stockroomsServingLoc);
 		}
-		
+
         gr.addAggregate('SUM', 'quantity');
-        //gr.groupBy('model');
+        gr.groupBy('model');
         gr.setOrder(false);
         gr.query();
         if (gr.next()) {
@@ -673,7 +673,7 @@ ProcSourceRequestManager.prototype = {
 
     _addSourceStockroomConditions: function(gr, model, excludeStockroom, userLocation, orderType, distributionChannel) {
         global.AssetUtils.addAssetQuery(gr, global.AssetUtils.ASSET_FUNCTION_FEATURE.SOURCING);
-        gr.addQuery('model', 'IN', new global.WrightHAMSourcingLogic().getModelSubstitutes(model));
+        gr.addQuery('model', model);
         gr.addQuery('install_status', '6');
         gr.addQuery('substatus', 'available');
         if(orderType === 'transfer_order' && this.isDistributionChannelActive && !gs.nil(distributionChannel) && distributionChannel.length > 0) {
@@ -758,7 +758,7 @@ ProcSourceRequestManager.prototype = {
             }
         }
         }
-        
+
         var counter = 0;
         var gr = new GlideAggregate('alm_asset');
         this._addSourceStockroomConditions(gr, model, excludeStockroom, userLocation, orderType, distributionChannel);
@@ -888,7 +888,7 @@ ProcSourceRequestManager.prototype = {
         validLicenses = this._getLicensesInternal(modelSysId);
         return validLicenses;
     },
-	
+
     _getEntitlementsInternal: function(modelSysId) {
         var validLicenses = [];
         if (modelSysId) {
@@ -925,7 +925,7 @@ ProcSourceRequestManager.prototype = {
         }
         return validLicenses;
     },
-    
+
     // Method used from SW Source request when SAMP is active
     getEntitlements: function() {
         var validLicenses = [];
@@ -997,7 +997,7 @@ ProcSourceRequestManager.prototype = {
         }
         return false;
     },
-	
+
 	processRequestInternal: function(scReqSysid, scTaskSysid, data) {
 		var orderCounts = {
             po_order: 0,
@@ -1160,7 +1160,7 @@ ProcSourceRequestManager.prototype = {
             }
             var avail = 0;
             try {
-                avail = new WrightHAMSourcingLogic().getAvailableQuantity(model, from);
+                avail = assetUtils.getAvailableQuantity(model, from);
             } catch (e) {}
             var consumeAmount;
             if ((avail != 0) && (parseInt(sourceQuant) > 0) && (parseInt(sourceQuant) >= parseInt(avail)))
@@ -1220,7 +1220,7 @@ ProcSourceRequestManager.prototype = {
             }
             var avail = 0;
             try {
-                avail = new WrightHAMSourcingLogic().getAvailableQuantity(model, from);
+                avail = assetUtils.getAvailableQuantity(model, from);
             } catch (e) {}
             var transAmount;
             if ((avail != 0) && (parseInt(sourceQuant) > 0) && (parseInt(sourceQuant) >= parseInt(avail)))
@@ -1312,7 +1312,7 @@ ProcSourceRequestManager.prototype = {
         req.request_line = reqItemSysid;
         try {
             if (!isConsumable) {
-                req.asset = new global.WrightHAMSourcingLogic().getFirstItem(modelGR, fromSysid, global.AssetUtils.INSTOCK_STATUS,
+                req.asset = (new AssetUtils()).getFirstItem(modelGR, fromSysid, global.AssetUtils.INSTOCK_STATUS,
                     global.AssetUtils.AVAILABLE_SUBSTATUS);
             }
             var sysId = req.insert();
@@ -1337,7 +1337,7 @@ ProcSourceRequestManager.prototype = {
             flowInputs.reserved_for = this._getRecordFromId('sys_user', reservedUser);
             flowInputs.stockroom = this._getRecordFromId('alm_stockroom', fromSysid);
             if (!isConsumable) {
-                assetId = new global.WrightHAMSourcingLogic().getFirstItem(modelGr, fromSysid, global.AssetUtils.INSTOCK_STATUS,
+                assetId = (new AssetUtils()).getFirstItem(modelGr, fromSysid, global.AssetUtils.INSTOCK_STATUS,
                     global.AssetUtils.AVAILABLE_SUBSTATUS);
                 assetGr = this._getRecordFromId('alm_asset', assetId);
                 oldReservedFor = assetGr.getValue('reserved_for');
@@ -1348,20 +1348,20 @@ ProcSourceRequestManager.prototype = {
                     isAssetReserved = true;
                 }
             } else {
-                consumableGr = new global.WrightHAMSourcingLogic().getConsumble(modelGr, flowInputs.stockroom, global.AssetUtils.INSTOCK_STATUS,
+                consumableGr = global.ProcurementUtils.getConsumble(modelGr, flowInputs.stockroom, global.AssetUtils.INSTOCK_STATUS,
                     global.AssetUtils.AVAILABLE_SUBSTATUS, consumeAmount);
                 assetId = new Consumables().split(consumableGr.sys_id, consumeAmount, global.AssetUtils.INSTOCK_STATUS,
                     global.AssetUtils.RESERVED_SUBSTATUS, '', consumableGr.stockroom, consumableGr.location, '');
                 if (assetId) {
                     isAssetReserved = true;
                 }
-                assetGr = new global.WrightHAMSourcingLogic().getConsumble(modelGr, flowInputs.stockroom, global.AssetUtils.INSTOCK_STATUS,
+                assetGr = global.ProcurementUtils.getConsumble(modelGr, flowInputs.stockroom, global.AssetUtils.INSTOCK_STATUS,
                     global.AssetUtils.RESERVED_SUBSTATUS, consumeAmount);
             }
 
             // if eam plugin is active and reqItem is associated with EAM WO CAT Item then skip Asset local Order subflow and trigger enterprise local order subflow
 			if(this.isEAMActive && sn_eam.EAMSourcingAutomationAPI && sn_eam.EAMSourcingAutomationAPI.triggerLocalorder ){	
-				
+
 				var contextId = sn_eam.EAMSourcingAutomationAPI.triggerLocalorder(assetGr , consumeAmount ,reqItemSysid , reservedUser ,fromSysid , isConsumable);		
 				if(!gs.nil(contextId))
 					return true;
@@ -1643,18 +1643,18 @@ ProcSourceRequestManager.prototype = {
             return;
         }
     },
-	
+
     _processCounterRequestInternal: function(softwareModels) {
         var models = [];
         models = softwareModels.split(",");
         var samutil = new SAMUtil();
         samutil.beginCountersForModels(models);
     },
-	
+
     _getLocation: function(item) {
         return item.requested_location ? item.requested_location : item.requested_user.location?item.requested_user.location.sys_id:'';
     },
-    
+
 	processCounterRequest: function() {
         var softwareModels = this.request.getParameter('sysparm_models');
         this._processCounterRequestInternal(softwareModels);
