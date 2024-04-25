@@ -20,8 +20,8 @@ WrightHAMSourcingLogic.prototype = {
         return models.toString();
     },
 
-	//Copied and edited from the global.AssetUtils script include
-	//Edited to use the getModelSubstitutes function
+    //Copied and edited from the global.AssetUtils script include
+    //Edited to use the getModelSubstitutes function
     getFirstItem: function(model, stockroom, status, substatus) {
         var gr = new GlideRecord('alm_asset');
         global.AssetUtils.addAssetQuery(gr, global.AssetUtils.ASSET_FUNCTION_FEATURE.SOURCING);
@@ -38,8 +38,8 @@ WrightHAMSourcingLogic.prototype = {
             [model.display_name, status, substatus]);
     },
 
-	//Copied and edited from the global.AssetUtils script include
-	//Edited to use the getModelSubstitutes function
+    //Copied and edited from the global.AssetUtils script include
+    //Edited to use the getModelSubstitutes function
     getAvailableQuantity: function(modelSid, stockroomSid) {
         var gr = new GlideAggregate('alm_asset');
         var counter = 0;
@@ -56,8 +56,8 @@ WrightHAMSourcingLogic.prototype = {
         return counter;
     },
 
-	//New function used by the "Validate TOL and check availibility" business rule
-	//Returns true if an asset.model is a substitute of the TOL model
+    //New function used by the "Validate TOL and check availibility" business rule
+    //Returns true if an asset.model is a substitute of the TOL model
     checkModelIsSubstitute: function(substituteID, modelID){
         if(!substituteID || !modelID)
             return false;
