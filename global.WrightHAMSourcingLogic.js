@@ -3,10 +3,10 @@ WrightHAMSourcingLogic.prototype = {
     initialize: function() {
     },
 
-	//Copied from the global.AssetUsageFilters EAM script include for use in HAM
-	//Looks up all the substitute models from a given model
-	//model should be model sys_id
-	getModelSubstitutes: function(model) {
+    //Copied from the global.AssetUsageFilters EAM script include for use in HAM
+    //Looks up all the substitute models from a given model
+    //model should be model sys_id
+    getModelSubstitutes: function(model) {
 		
         var models = [];
         models.push(model);
