@@ -3,10 +3,12 @@ WrightHAMSourcingLogic.prototype = {
     initialize: function() {
     },
 
-    //Copied from the global.AssetUsageFilters EAM script include for use in HAM
-    //Looks up all the substitute models from a given model
-    //model should be model sys_id
-    getModelSubstitutes: function(model) {
+	//Copied from the global.AssetUsageFilters EAM script include for use in HAM
+	//Modified to include "returnArray" parameter
+	//Looks up all the substitute models from a given model
+	//model should be model sys_id
+	//returnArray (optional) - set to true to return an array of model sys_ids instead of a comma-separated string
+	getModelSubstitutes: function(model, returnArray) {
 		
         var models = [];
         models.push(model);
@@ -17,11 +19,34 @@ WrightHAMSourcingLogic.prototype = {
         while (modelSubstitutes.next()) {
             models.push(modelSubstitutes.getValue("substitute"));
         }
-        return models.toString();
+        if(!returnArray)
+            return models.toString();
+        else
+            return models;
     },
 
-    //Copied and edited from the global.AssetUtils script include
-    //Edited to use the getModelSubstitutes function
+	//Looks up all the models that a model is a substitute of
+	//Opposite of getModelSubstitutes above
+	//model should be model sys_id
+	//returnArray (optional) - set to true to return an array of model sys_ids instead of a comma-separated string
+	getModelsModelIsASubstituteOf: function(model, returnArray) {
+		var models = [];
+        models.push(model);
+
+        var modelSubstitutes = new GlideRecord("cmdb_m2m_model_substitute");
+        modelSubstitutes.addQuery("substitute", model);
+        modelSubstitutes.query();
+        while (modelSubstitutes.next()) {
+            models.push(modelSubstitutes.getValue("model"));
+        }
+        if(!returnArray)
+            return models.toString();
+        else
+            return models;
+	},
+
+	//Copied and edited from the global.AssetUtils script include
+	//Edited to use the getModelSubstitutes function
     getFirstItem: function(model, stockroom, status, substatus) {
         var gr = new GlideRecord('alm_asset');
         global.AssetUtils.addAssetQuery(gr, global.AssetUtils.ASSET_FUNCTION_FEATURE.SOURCING);
@@ -38,8 +63,8 @@ WrightHAMSourcingLogic.prototype = {
             [model.display_name, status, substatus]);
     },
 
-    //Copied and edited from the global.AssetUtils script include
-    //Edited to use the getModelSubstitutes function
+	//Copied and edited from the global.AssetUtils script include
+	//Edited to use the getModelSubstitutes function
     getAvailableQuantity: function(modelSid, stockroomSid) {
         var gr = new GlideAggregate('alm_asset');
         var counter = 0;
@@ -54,21 +79,6 @@ WrightHAMSourcingLogic.prototype = {
         if (gr.next())
             counter = gr.getAggregate('SUM', 'quantity');
         return counter;
-    },
-
-    //New function used by the "Validate TOL and check availibility" business rule
-    //Returns true if an asset.model is a substitute of the TOL model
-    checkModelIsSubstitute: function(substituteID, modelID){
-        if(!substituteID || !modelID)
-            return false;
-        if(substitute.toString() === model.toString())
-            return true;
-        var modelSubstitute = new GlideRecord("cmdb_m2m_model_substitute");
-        modelSubstitute.addQuery("model", modelID);
-        modelSubstitute.addQuery("substitute", substituteID);
-        modelSubstitute.setLimit(1);
-        modelSubstitute.query();
-        return modelSubstitute.hasNext();
     },
 
     type: 'WrightHAMSourcingLogic'
