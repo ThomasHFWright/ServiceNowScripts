@@ -543,7 +543,7 @@ ProcSourceRequestManager.prototype = {
         var gr = new GlideAggregate('alm_asset');
         var counter = 0;
         global.AssetUtils.addAssetQuery(gr, global.AssetUtils.ASSET_FUNCTION_FEATURE.SOURCING);
-        gr.addQuery('model', 'IN', new global.WrightHAMSourcingLogic() .getModelSubstitutes(model));
+        gr.addQuery('model', 'IN', new global.WrightHAMSourcingLogic().getModelSubstitutes(model));
         gr.addQuery('install_status', global.AssetUtils.INSTOCK_STATUS);
         gr.addQuery('substatus', global.AssetUtils.AVAILABLE_SUBSTATUS);
         //Stock order exclude stock in requested stockroom
@@ -627,7 +627,7 @@ ProcSourceRequestManager.prototype = {
         var count = 0;
         var gr = new GlideAggregate('alm_asset');
         global.AssetUtils.addAssetQuery(gr, global.AssetUtils.ASSET_FUNCTION_FEATURE.SOURCING);
-        gr.addQuery('model', 'IN', new global.WrightHAMSourcingLogic() .getModelSubstitutes(item.cat_item.model));
+        gr.addQuery('model', 'IN', new global.WrightHAMSourcingLogic().getModelSubstitutes(item.cat_item.model));
         gr.addQuery('install_status', global.AssetUtils.INSTOCK_STATUS);
         gr.addQuery('substatus', global.AssetUtils.AVAILABLE_SUBSTATUS);
         if (!gs.nil(excludeStockroom))
@@ -673,7 +673,7 @@ ProcSourceRequestManager.prototype = {
 
     _addSourceStockroomConditions: function(gr, model, excludeStockroom, userLocation, orderType, distributionChannel) {
         global.AssetUtils.addAssetQuery(gr, global.AssetUtils.ASSET_FUNCTION_FEATURE.SOURCING);
-        gr.addQuery('model', 'IN', new global.WrightHAMSourcingLogic() .getModelSubstitutes(model));
+        gr.addQuery('model', 'IN', new global.WrightHAMSourcingLogic().getModelSubstitutes(model));
         gr.addQuery('install_status', '6');
         gr.addQuery('substatus', 'available');
         if(orderType === 'transfer_order' && this.isDistributionChannelActive && !gs.nil(distributionChannel) && distributionChannel.length > 0) {
@@ -1160,7 +1160,7 @@ ProcSourceRequestManager.prototype = {
             }
             var avail = 0;
             try {
-                avail = new global.WrightHAMSourcingLogic() .getAvailableQuantity(model, from);
+                avail = new global.WrightHAMSourcingLogic().getAvailableQuantity(model, from);
             } catch (e) {}
             var consumeAmount;
             if ((avail != 0) && (parseInt(sourceQuant) > 0) && (parseInt(sourceQuant) >= parseInt(avail)))
@@ -1220,7 +1220,7 @@ ProcSourceRequestManager.prototype = {
             }
             var avail = 0;
             try {
-                avail = new global.WrightHAMSourcingLogic() .getAvailableQuantity(model, from);
+                avail = new global.WrightHAMSourcingLogic().getAvailableQuantity(model, from);
             } catch (e) {}
             var transAmount;
             if ((avail != 0) && (parseInt(sourceQuant) > 0) && (parseInt(sourceQuant) >= parseInt(avail)))
@@ -1312,7 +1312,7 @@ ProcSourceRequestManager.prototype = {
         req.request_line = reqItemSysid;
         try {
             if (!isConsumable) {
-                req.asset = new global.WrightHAMSourcingLogic() .getFirstItem(modelGR, fromSysid, global.AssetUtils.INSTOCK_STATUS,
+                req.asset = new global.WrightHAMSourcingLogic().getFirstItem(modelGR, fromSysid, global.AssetUtils.INSTOCK_STATUS,
                     global.AssetUtils.AVAILABLE_SUBSTATUS);
             }
             var sysId = req.insert();
@@ -1337,7 +1337,7 @@ ProcSourceRequestManager.prototype = {
             flowInputs.reserved_for = this._getRecordFromId('sys_user', reservedUser);
             flowInputs.stockroom = this._getRecordFromId('alm_stockroom', fromSysid);
             if (!isConsumable) {
-                assetId = new global.WrightHAMSourcingLogic() .getFirstItem(modelGr, fromSysid, global.AssetUtils.INSTOCK_STATUS,
+                assetId = new global.WrightHAMSourcingLogic().getFirstItem(modelGr, fromSysid, global.AssetUtils.INSTOCK_STATUS,
                     global.AssetUtils.AVAILABLE_SUBSTATUS);
                 assetGr = this._getRecordFromId('alm_asset', assetId);
                 oldReservedFor = assetGr.getValue('reserved_for');
