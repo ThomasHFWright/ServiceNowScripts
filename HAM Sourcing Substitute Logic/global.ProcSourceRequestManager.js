@@ -276,8 +276,7 @@ ProcSourceRequestManager.prototype = {
     },
 
     _getRequestData: function(scReqSysid, scReqTaskSysid) {
-        var reqItems = this._getRecordObject('sc_req_item',
-            [{
+        var queryParams = [{
                     key: 'request',
                     value: scReqSysid
                 },
@@ -285,12 +284,28 @@ ProcSourceRequestManager.prototype = {
                     key: 'sourced',
                     value: 'false'
                 },
-                [{
+                {
                     key: 'cat_item.model',
                     value: 'null',
                     operator: '!='
-                }]
-            ],
+                }
+            ];
+		if (this.isHAMPActive) {
+            var additionalParams = [{
+                    key: 'cat_item.flow_designer_flow',
+                    value: 'null',
+                    operator: '='
+                },
+                {
+                    key: 'cat_item.flow_designer_flow',
+                    value: sn_hamp.HAMZeroTouchRequestUtils.ZERO_TOUCH_REQUEST_FLOW_SYS_ID,
+                    operator: '!='
+                }
+            ];
+            queryParams.push(additionalParams);
+		}
+        var reqItems = this._getRecordObject('sc_req_item',
+            queryParams,
             ['sys_id', 'number', 'quantity', 'quantity_sourced', 'request', 'price', 'state', 'received', 'sourced', 'requested_for'], {
                 'cat_item': {
                     table: 'sc_cat_item',
