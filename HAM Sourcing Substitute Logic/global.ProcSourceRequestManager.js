@@ -1375,13 +1375,20 @@ ProcSourceRequestManager.prototype = {
             } else {
                 consumableGr = global.ProcurementUtils.getConsumble(modelGr, flowInputs.stockroom, global.AssetUtils.INSTOCK_STATUS,
                     global.AssetUtils.AVAILABLE_SUBSTATUS, consumeAmount);
+                if (this.isEAMActive && sn_eam.EAMSourcingAutomationAPI.isWorkOrderPartsReqItem && sn_eam.EAMSourcingAutomationAPI.isWorkOrderPartsReqItem(reqItemSysid)) {
+                    // Consumables sourced through EAM work order parts request need to be tracked separately, stamping request line here to avoid merging
+                    assetId = new Consumables().split(consumableGr.sys_id, consumeAmount, global.AssetUtils.INSTOCK_STATUS,
+                        global.AssetUtils.RESERVED_SUBSTATUS, '', consumableGr.stockroom, consumableGr.location, '', '', {request_line: reqItemSysid});
+                    assetGr = this._getRecordFromId('alm_asset', assetId);
+                } else {
                 assetId = new Consumables().split(consumableGr.sys_id, consumeAmount, global.AssetUtils.INSTOCK_STATUS,
                     global.AssetUtils.RESERVED_SUBSTATUS, '', consumableGr.stockroom, consumableGr.location, '');
+                    assetGr = global.ProcurementUtils.getConsumble(modelGr, flowInputs.stockroom, global.AssetUtils.INSTOCK_STATUS,
+                        global.AssetUtils.RESERVED_SUBSTATUS, consumeAmount);
+                }
                 if (assetId) {
                     isAssetReserved = true;
                 }
-                assetGr = global.ProcurementUtils.getConsumble(modelGr, flowInputs.stockroom, global.AssetUtils.INSTOCK_STATUS,
-                    global.AssetUtils.RESERVED_SUBSTATUS, consumeAmount);
             }
 
             // if eam plugin is active and reqItem is associated with EAM WO CAT Item then skip Asset local Order subflow and trigger enterprise local order subflow
