@@ -768,7 +768,7 @@ ProcSourceRequestManager.prototype = {
             if(!gs.nil(userLocation)) {
                 var userLocationStockrooms = sn_itam_common.InventoryUtil.getStockroomsBasedOnLocation(userLocation);
                 if(!gs.nil(userLocationStockrooms) && userLocationStockrooms.length > 0) {
-                    channelStockroomsWithRank = sn_itam_common.InventoryUtil.getStockroomsServicingBaseStockroom(userLocationStockrooms[0]);
+                    channelStockroomsWithRank = sn_itam_common.InventoryUtil.getStockroomsServicingLocationCoverageStockrooms(userLocationStockrooms);
                     distributionChannel = Object.keys(channelStockroomsWithRank);
                 } else {
                     var stockroomsServingLoc = new sn_itam_common.InventoryUtil()._getStockroomsServicingLocation(userLocation);
