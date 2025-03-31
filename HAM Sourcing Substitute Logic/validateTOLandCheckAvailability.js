@@ -1,3 +1,4 @@
+//This is the script within the "Validate TOL and check availability" business rule. It is modified to allow a substitute model asset to be updated in the Transfer Order Line Asset field
 validateTOLandCheckAvailability();
 
 function validateTOLandCheckAvailability() {

@@ -79,7 +79,7 @@ ProcSourceRequestManager.prototype = {
                 || (GlidePluginManager.isActive('com.sn_eam') && sn_eam.StockOrderUtils.isStockOrderItem(reqItem.cat_item.sys_id))) {
                     excludeStockroom = reqItem.dest_stockroom.value;
                 }
-                var transferTotal = sn_itam_common.InventoryUtil.getTotalTransferInstockForDistributionChannel(reqItem.cat_item.model, reqItem.requested_user.location, excludeStockroom);
+                var transferTotal = global.WrightInventoryUtil.getTotalTransferInstockForDistributionChannel(reqItem.cat_item.model, reqItem.requested_user.location, excludeStockroom);
                 reqItem['transfer_instock'] = reqItem['local_instock'] + transferTotal;
                 if (!procSourceRequestManager.allowLocalStockroomInTO) {
                     reqItem['transfer_instock'] = transferTotal;
@@ -677,7 +677,17 @@ ProcSourceRequestManager.prototype = {
         gr.addQuery('install_status', '6');
         gr.addQuery('substatus', 'available');
         if(orderType === 'transfer_order' && this.isDistributionChannelActive && !gs.nil(distributionChannel) && distributionChannel.length > 0) {
-            gr.addQuery('stockroom', 'IN', distributionChannel);
+            /* The following changes are due to a ServiceNow bug where if distribution channels are enabled
+			 * the system is excluding assets which are locally sourceable despite the sys_property
+			 * glide.asset.procurement.sourcing.local_stock_transfer being set to true
+			 */
+			var orCond = gr.addQuery('stockroom', 'IN', distributionChannel);
+
+			if(this.allowLocalStockroomInTO && this.isServiceLocationActive){
+				var includeSRs = new sn_itam_common.InventoryUtil()._getStockroomsServicingLocation(userLocation);
+				if (!gs.nil(includeSRs))
+					orCond.addOrCondition('stockroom', 'IN', includeSRs);
+			}
         }
         if (!gs.nil(userLocation)) {
             if ('local_order' === String(orderType)) {
