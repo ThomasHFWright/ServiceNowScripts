@@ -2,6 +2,8 @@
 
 Useful ServiceNow scripts I've put together over time.
 
+ For best practices start here ➡️ [ServiceNow Best Practices Wiki](Best%20practices%20documentation/index.md).
+
 ## License
 
 This repository is released under the **ServiceNow Internal-Use Restricted License (Personal/Education/Nonprofit) v1.0**:
