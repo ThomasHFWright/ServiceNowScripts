@@ -2,7 +2,7 @@
 
 Useful ServiceNow scripts I've put together over time.
 
- For best practices start here ➡️ [ServiceNow Best Practices Wiki](Best%20practices%20documentation/index.md).
+ For best practices start here ➡️ [ServiceNow Best Practices Wiki](Best%20practices%20documentation/README.md).
 
 ## License
 
